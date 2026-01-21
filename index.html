@@ -1,0 +1,1348 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>365 Project</title>
+  <style>
+    :root{
+      --paper:#f4efe6;
+      --ink:#1f2328;
+      --muted:#6b6258;
+      --gold:#c8a85d;
+      --rose:#b77485;
+      --sage:#7aa38f;
+
+      --card: rgba(255,255,255,.62);
+      --card2: rgba(255,255,255,.42);
+      --line: rgba(58,44,34,.18);
+
+      --shadow: 0 22px 70px rgba(0,0,0,.18);
+      --blur: blur(12px);
+      --radius: 22px;
+    }
+    [data-theme="night"]{
+      --paper:#0f1417;
+      --ink:#e7e4dd;
+      --muted:#b4ab9f;
+      --card: rgba(15,20,23,.64);
+      --card2: rgba(15,20,23,.48);
+      --line: rgba(231,228,221,.14);
+      --shadow: 0 28px 95px rgba(0,0,0,.55);
+    }
+
+    *{ box-sizing:border-box; }
+    html,body{ height:100%; }
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, Arial;
+      color: var(--ink);
+      background:
+        radial-gradient(900px 520px at 18% 10%, rgba(183,116,133,.18), transparent 62%),
+        radial-gradient(1000px 600px at 84% 18%, rgba(122,163,143,.16), transparent 60%),
+        radial-gradient(900px 700px at 50% 90%, rgba(200,168,93,.16), transparent 60%),
+        linear-gradient(180deg, rgba(255,255,255,.02), rgba(0,0,0,.05));
+      overflow-x:hidden;
+    }
+
+    .serif{ font-family: ui-serif, Georgia, "Times New Roman", Times, serif; letter-spacing:.2px; }
+    .mono{ font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
+
+    .wrap{
+      max-width: 1180px;
+      margin: 0 auto;
+      padding: 22px 16px 60px;
+      position:relative;
+    }
+
+    header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom: 14px;
+    }
+
+    .brand{
+      display:flex;
+      gap:12px;
+      align-items:center;
+      min-width: 260px;
+    }
+    .seal{
+      width:46px;height:46px;border-radius:16px;
+      background: radial-gradient(circle at 30% 30%, rgba(255,255,255,.55), transparent 55%),
+                  linear-gradient(135deg, rgba(183,116,133,.95), rgba(200,168,93,.92));
+      box-shadow: var(--shadow);
+      position:relative;
+      overflow:hidden;
+    }
+    .seal:after{
+      content:"";
+      position:absolute;
+      inset:-10px;
+      background: radial-gradient(circle at 60% 40%, rgba(255,255,255,.22), transparent 60%);
+      transform: rotate(20deg);
+    }
+    .brand h1{ margin:0; font-size: 18px; }
+    .brand p{ margin:2px 0 0; color: var(--muted); font-size: 13px; }
+
+    .topBtns{ display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+    .btn{
+      border: 1px solid var(--line);
+      background: var(--card2);
+      backdrop-filter: var(--blur);
+      color: var(--ink);
+      cursor:pointer;
+      padding: 10px 12px;
+      border-radius: 16px;
+      box-shadow: 0 10px 28px rgba(0,0,0,.09);
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      user-select:none;
+      transition: transform .08s ease, opacity .15s ease;
+      font-size: 13px;
+      white-space:nowrap;
+    }
+    .btn:hover{ transform: translateY(-1px); }
+    .btn:active{ transform: translateY(1px) scale(.99); }
+    .btn.primary{
+      background: linear-gradient(135deg, rgba(183,116,133,.22), rgba(200,168,93,.18));
+      border-color: rgba(183,116,133,.28);
+    }
+    .btn:disabled{ opacity:.55; cursor:not-allowed; transform:none; }
+    .pill{
+      font-size:12px;
+      padding:2px 8px;
+      border-radius:999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.12);
+      color: var(--muted);
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: .9fr 1.35fr .85fr;
+      gap:14px;
+      align-items:start;
+    }
+    @media (max-width: 1060px){
+      .grid{ grid-template-columns: 1fr; }
+    }
+
+    .card{
+      border: 1px solid var(--line);
+      background: var(--card);
+      backdrop-filter: var(--blur);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+      position:relative;
+    }
+    .cardHeader{
+      padding: 14px 14px 10px;
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      border-bottom: 1px solid var(--line);
+      background:
+        radial-gradient(800px 180px at 20% 0%, rgba(200,168,93,.16), transparent 60%),
+        radial-gradient(800px 180px at 80% 0%, rgba(183,116,133,.14), transparent 60%);
+    }
+    .cardHeader h2{
+      margin:0;
+      font-size: 15px;
+      display:flex;
+      gap:10px;
+      align-items:center;
+    }
+    .sub{ margin:6px 0 0; color: var(--muted); font-size: 13px; line-height: 1.35; }
+    .content{ padding: 14px; }
+
+    /* Candle glow */
+    .glow{
+      position:absolute;
+      right:-80px;
+      top:-80px;
+      width:240px;
+      height:240px;
+      background: radial-gradient(circle, rgba(200,168,93,.35), transparent 62%);
+      opacity:.9;
+      pointer-events:none;
+      animation: flicker 2.6s ease-in-out infinite;
+      filter: blur(2px);
+    }
+    @keyframes flicker{
+      0%,100%{ transform: translate(0,0) scale(1); opacity:.85; }
+      50%{ transform: translate(-10px, 8px) scale(1.03); opacity:.95; }
+    }
+
+    /* Calendar */
+    .calTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      margin-bottom:10px;
+    }
+    .calTitle{ font-size: 14px; }
+    .calGrid{
+      display:grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap:8px;
+    }
+    .dow{
+      text-align:center;
+      color: var(--muted);
+      font-size: 12px;
+      padding: 4px 0;
+    }
+    .day{
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.10);
+      border-radius: 14px;
+      padding: 10px 8px;
+      min-height: 44px;
+      cursor:pointer;
+      position:relative;
+      transition: transform .08s ease;
+      display:flex;
+      align-items:flex-start;
+      justify-content:flex-end;
+      font-size: 12px;
+      color: var(--muted);
+      user-select:none;
+    }
+    .day:hover{ transform: translateY(-1px); }
+    .day.off{ opacity:.45; cursor:default; transform:none; }
+    .day.today{ border-color: rgba(200,168,93,.55); }
+    .day.selected{ outline: 2px solid rgba(183,116,133,.42); }
+    .dot{
+      position:absolute;
+      left:10px; bottom:10px;
+      width:8px;height:8px;border-radius:999px;
+      background: rgba(183,116,133,.78);
+      box-shadow: 0 8px 18px rgba(0,0,0,.12);
+    }
+    .noteDot{ background: rgba(122,163,143,.78); }
+    .star{
+      position:absolute;
+      left:10px; top:8px;
+      font-size: 12px;
+      opacity:.9;
+    }
+
+    /* Progress */
+    .progressBox{
+      border: 1px dashed rgba(200,168,93,.42);
+      background: rgba(200,168,93,.08);
+      border-radius: 18px;
+      padding: 12px;
+      margin-top: 12px;
+    }
+    .bar{
+      height: 10px;
+      background: rgba(255,255,255,.22);
+      border-radius:999px;
+      overflow:hidden;
+      margin-top:10px;
+    }
+    .fill{
+      height:100%;
+      width: 0%;
+      border-radius:999px;
+      background: linear-gradient(90deg, rgba(183,116,133,.8), rgba(200,168,93,.85));
+      transition: width .25s ease;
+    }
+
+    /* Editor fields */
+    label{ font-size:12px; color: var(--muted); display:block; margin-bottom:6px; }
+    input[type="text"], textarea{
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.12);
+      color: var(--ink);
+      border-radius: 16px;
+      padding: 10px 12px;
+      outline:none;
+      backdrop-filter: var(--blur);
+      font-size: 13px;
+      width:100%;
+    }
+    textarea{
+      min-height: 110px;
+      resize: vertical;
+      padding: 14px;
+      line-height: 1.6;
+      font-size: 14px;
+    }
+    textarea::placeholder, input::placeholder{ color: rgba(107,98,88,.85); }
+    [data-theme="night"] textarea::placeholder, [data-theme="night"] input::placeholder{ color: rgba(180,171,159,.85); }
+
+    .twoCol{ display:grid; grid-template-columns: 1fr 1fr; gap:10px; }
+    @media (max-width: 1060px){ .twoCol{ grid-template-columns: 1fr; } }
+
+    .row{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; justify-content:space-between; margin-top:10px; }
+    .mini{ display:flex; flex-wrap:wrap; gap:10px; align-items:center; }
+
+    .mediaRow{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:12px;
+      margin-top:12px;
+    }
+    @media (max-width: 1060px){ .mediaRow{ grid-template-columns: 1fr; } }
+
+    .drop{
+      border: 1px dashed rgba(58,44,34,.28);
+      background: rgba(255,255,255,.10);
+      border-radius: 18px;
+      padding: 12px;
+    }
+    .drop strong{ display:block; font-size: 13px; margin-bottom: 6px; }
+    .hint{ color: var(--muted); font-size: 12px; line-height:1.4; margin:0; }
+
+    .preview{
+      margin-top:10px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.08);
+      overflow:hidden;
+    }
+    .preview img{
+      width:100%;
+      display:block;
+      max-height: 260px;
+      object-fit: cover;
+    }
+    audio{ width:100%; }
+
+    .statusLine{
+      margin-top:10px;
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+
+    /* Entries list / gallery */
+    .search{ display:flex; gap:10px; margin-bottom:10px; }
+    .search input{ flex:1; }
+
+    .tabs{ display:flex; gap:10px; flex-wrap:wrap; margin-bottom:10px; }
+    .tab{ padding:8px 10px; border-radius: 14px; border:1px solid var(--line); background: rgba(255,255,255,.10); cursor:pointer; font-size:13px; }
+    .tab.active{ outline:2px solid rgba(183,116,133,.35); }
+
+    .list{
+      list-style:none;
+      margin:0;
+      padding:0;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      max-height: 620px;
+      overflow:auto;
+    }
+    .entry{
+      padding: 12px;
+      border-radius: 18px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.10);
+      cursor:pointer;
+      transition: transform .08s ease;
+    }
+    .entry:hover{ transform: translateY(-1px); }
+    .entry strong{ display:block; font-size: 13px; }
+    .entry small{ display:block; color: var(--muted); margin-top:4px; font-size: 12px; }
+
+    .tagRow{ margin-top:8px; display:flex; gap:8px; flex-wrap:wrap; }
+    .tag{
+      font-size: 12px;
+      padding: 2px 10px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255,255,255,.10);
+      color: var(--muted);
+    }
+
+    .gallery{
+      display:grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap:10px;
+      max-height: 620px;
+      overflow:auto;
+    }
+    @media (max-width: 1060px){ .gallery{ grid-template-columns: repeat(3, 1fr); } }
+    @media (max-width: 680px){ .gallery{ grid-template-columns: repeat(2, 1fr); } }
+
+    .tile{
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.10);
+      border-radius: 18px;
+      overflow:hidden;
+      cursor:pointer;
+      position:relative;
+    }
+    .tile img{
+      width:100%;
+      height:120px;
+      object-fit:cover;
+      display:block;
+      filter: contrast(1.03) saturate(1.02);
+    }
+    .tile .cap{
+      padding: 8px 10px;
+      font-size: 12px;
+      color: var(--muted);
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+    }
+
+    /* Toast */
+    .toast{
+      position:fixed;
+      left: 50%;
+      bottom: 18px;
+      transform: translateX(-50%);
+      padding: 10px 12px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: var(--card);
+      backdrop-filter: var(--blur);
+      box-shadow: 0 10px 30px rgba(0,0,0,.15);
+      font-size: 13px;
+      color: var(--ink);
+      opacity:0;
+      pointer-events:none;
+      transition: opacity .2s ease, transform .2s ease;
+      z-index: 1200;
+      max-width: min(92vw, 560px);
+      text-align:center;
+    }
+    .toast.show{ opacity:1; transform: translateX(-50%) translateY(-6px); }
+
+    /* Cute ink hearts */
+    .heart{
+      position:fixed;
+      left:50%; top:50%;
+      transform: translate(-50%,-50%);
+      pointer-events:none;
+      animation: pop 900ms ease-out forwards;
+      filter: drop-shadow(0 10px 14px rgba(0,0,0,.18));
+      z-index: 1100;
+    }
+    @keyframes pop{
+      0%{ opacity:0; transform: translate(-50%,-50%) scale(.6); }
+      10%{ opacity:1; }
+      100%{ opacity:0; transform: translate(calc(-50% + var(--dx)), calc(-50% + var(--dy))) scale(1.2); }
+    }
+
+    /* Dust motes */
+    .mote{
+      position:fixed;
+      width:10px;height:10px;border-radius:999px;
+      background: rgba(200,168,93,.22);
+      border: 1px solid rgba(200,168,93,.18);
+      opacity:.35;
+      pointer-events:none;
+      animation: drift linear infinite;
+      filter: blur(.2px);
+    }
+    @keyframes drift{
+      from{ transform: translateY(120px) translateX(0) scale(.8); opacity:0; }
+      12%{ opacity:.55; }
+      to{ transform: translateY(-1200px) translateX(60px) scale(1.2); opacity:0; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">
+        <div class="seal" aria-hidden="true"></div>
+        <div>
+          <h1 class="serif">365 Diary</h1>
+          <p>one photo + one music a day • dark academia tracker</p>
+        </div>
+      </div>
+
+      <div class="topBtns">
+        <button class="btn" id="themeBtn">🌙 <span class="pill" id="themePill">night</span></button>
+        <button class="btn" id="todayBtn">🗓️ today</button>
+        <button class="btn" id="exportBtn">⬇️ export</button>
+        <button class="btn" id="importBtn">⬆️ import</button>
+        <input id="importFile" type="file" accept="application/json" style="display:none;" />
+        <button class="btn primary" id="markBtn">✅ mark complete</button>
+      </div>
+    </header>
+
+    <div class="grid">
+      <!-- LEFT: Calendar + Progress -->
+      <section class="card">
+        <div class="cardHeader">
+          <div>
+            <h2>🗓️ <span class="serif">Calendar</span></h2>
+            <p class="sub">Dots show saved days. Pink = complete. Green = saved note/media (partial).</p>
+          </div>
+        </div>
+        <div class="content">
+          <div class="calTop">
+            <button class="btn" id="prevMonthBtn">←</button>
+            <div class="calTitle serif" id="calTitle"></div>
+            <button class="btn" id="nextMonthBtn">→</button>
+          </div>
+          <div class="calGrid" id="calGrid"></div>
+
+          <div class="progressBox">
+            <div class="mini" style="justify-content:space-between; width:100%;">
+              <div class="serif" style="font-size:14px;">Year progress</div>
+              <div class="pill mono" id="progText">0 / 365</div>
+            </div>
+            <div class="bar"><div class="fill" id="progFill"></div></div>
+            <p class="hint" id="progHint" style="margin-top:10px;">Complete a day when it has a photo + (audio OR link).</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- MIDDLE: Editor -->
+      <section class="card">
+        <div class="glow" aria-hidden="true"></div>
+        <div class="cardHeader">
+          <div>
+            <h2>🕯️ <span class="serif">Day entry</span></h2>
+            <p class="sub">Select a date, add your photo + music, write a small note.</p>
+          </div>
+        </div>
+
+        <div class="content">
+          <div class="mini" style="justify-content:space-between;">
+            <div class="pill mono" id="datePill">—</div>
+            <div class="pill mono" id="statusPill">loading…</div>
+          </div>
+
+          <div style="height:10px"></div>
+
+          <div class="twoCol">
+            <div>
+              <label>Music link (Spotify/YouTube/etc.)</label>
+              <input id="musicLink" type="text" placeholder="paste link (optional if you upload audio)" />
+            </div>
+            <div>
+              <label>Caption / title</label>
+              <input id="captionInput" type="text" placeholder="e.g., rainy walk + a calm song" maxlength="80" />
+            </div>
+          </div>
+
+          <div style="height:10px"></div>
+
+          <label>Note</label>
+          <textarea id="noteArea" class="serif" placeholder="a few lines about today…"></textarea>
+
+          <div class="mediaRow">
+            <div class="drop">
+              <strong>📸 Photo of the day</strong>
+              <p class="hint">Upload one image. It will be stored on this device.</p>
+              <div class="mini" style="margin-top:10px;">
+                <button class="btn" id="photoPickBtn">choose photo</button>
+                <button class="btn" id="photoClearBtn">remove</button>
+                <input id="photoInput" type="file" accept="image/*" hidden />
+              </div>
+              <div class="preview" id="photoPreview" style="display:none;">
+                <img id="photoImg" alt="Photo preview" />
+              </div>
+            </div>
+
+            <div class="drop">
+              <strong>🎵 Music of the day</strong>
+              <p class="hint">Upload audio OR paste a link. Upload plays in-app.</p>
+              <div class="mini" style="margin-top:10px;">
+                <button class="btn" id="audioPickBtn">upload audio</button>
+                <button class="btn" id="audioClearBtn">remove</button>
+                <input id="audioInput" type="file" accept="audio/*" hidden />
+              </div>
+              <div class="preview" id="audioPreview" style="display:none; padding:10px;">
+                <audio id="audioPlayer" controls></audio>
+              </div>
+              <div class="statusLine">
+                <span class="hint" id="musicHint">No music added yet.</span>
+                <button class="btn" id="openLinkBtn" disabled>🔗 open link</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="mini">
+              <button class="btn primary" id="saveBtn">💾 save</button>
+              <button class="btn" id="sprinkleBtn">💗 sprinkle</button>
+            </div>
+            <div class="mini">
+              <button class="btn" id="deleteBtn">🗑️ delete day</button>
+            </div>
+          </div>
+
+          <p class="sub" style="margin-top:10px;">
+            Tip: Export a backup sometimes. Browser storage can be cleared if you reset your browser.
+          </p>
+        </div>
+      </section>
+
+      <!-- RIGHT: List / Gallery -->
+      <section class="card">
+        <div class="cardHeader">
+          <div>
+            <h2>📚 <span class="serif">Entries</span></h2>
+            <p class="sub">Search captions/notes + jump to a day. Gallery shows photos.</p>
+          </div>
+        </div>
+
+        <div class="content">
+          <div class="tabs">
+            <button class="tab active" id="tabList">List</button>
+            <button class="tab" id="tabGallery">Gallery</button>
+          </div>
+
+          <div class="search">
+            <input id="searchInput" type="text" placeholder="search… (caption, note, link)" />
+            <button class="btn" id="clearSearchBtn">✖</button>
+          </div>
+
+          <div id="listView">
+            <ul class="list" id="entriesList"></ul>
+          </div>
+
+          <div id="galleryView" style="display:none;">
+            <div class="gallery" id="galleryGrid"></div>
+          </div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <div class="toast" id="toast">Saved.</div>
+
+  <script>
+    // ===== Cute sprinkle + motes =====
+    const glyphs = ["💗","💖","✨","🌸","🕯️","📚","☕","🌿"];
+    function sprinkle(n=14){
+      for(let i=0;i<n;i++){
+        const h = document.createElement("div");
+        h.className = "heart";
+        h.textContent = glyphs[(Math.random()*glyphs.length)|0];
+        h.style.left = (Math.random()*70 + 15) + "vw";
+        h.style.top = (Math.random()*60 + 20) + "vh";
+        h.style.setProperty("--dx", (Math.random()*280 - 140) + "px");
+        h.style.setProperty("--dy", (Math.random()*260 - 150) + "px");
+        h.style.animationDuration = (Math.random()*400 + 700) + "ms";
+        h.style.fontSize = (Math.random()*12 + 16) + "px";
+        document.body.appendChild(h);
+        setTimeout(()=> h.remove(), 1200);
+      }
+    }
+    function spawnMote(){
+      const m = document.createElement("div");
+      m.className = "mote";
+      const size = Math.random()*12 + 8;
+      m.style.width = size + "px";
+      m.style.height = size + "px";
+      m.style.left = (Math.random()*100) + "vw";
+      m.style.bottom = "-40px";
+      m.style.animationDuration = (Math.random()*12 + 12) + "s";
+      m.style.opacity = (Math.random()*0.25 + 0.18);
+      document.body.appendChild(m);
+      setTimeout(()=> m.remove(), 26000);
+    }
+    setInterval(spawnMote, 820);
+    for(let i=0;i<10;i++) setTimeout(spawnMote, i*150);
+
+    // ===== Toast =====
+    const toastEl = document.getElementById("toast");
+    function toast(msg){
+      toastEl.textContent = msg;
+      toastEl.classList.add("show");
+      setTimeout(()=> toastEl.classList.remove("show"), 1300);
+    }
+
+    // ===== Theme =====
+    const themeBtn = document.getElementById("themeBtn");
+    const themePill = document.getElementById("themePill");
+    const themeStoreKey = "ledger.theme";
+    const state = {
+      theme: (localStorage.getItem(themeStoreKey) || "day"),
+      selectedDate: null,
+      calYear: null,
+      calMonth: null,
+      photoUrl: null,
+      audioUrl: null,
+      view: "list",
+    };
+    function applyTheme(){
+      document.documentElement.dataset.theme = state.theme === "night" ? "night" : "day";
+      themePill.textContent = state.theme === "night" ? "day" : "night";
+      localStorage.setItem(themeStoreKey, state.theme);
+    }
+    themeBtn.addEventListener("click", () => {
+      state.theme = state.theme === "night" ? "day" : "night";
+      applyTheme();
+      sprinkle(10);
+    });
+    applyTheme();
+
+    // ===== Date helpers =====
+    const pad2 = n => String(n).padStart(2,"0");
+    function ymd(d){ return `${d.getFullYear()}-${pad2(d.getMonth()+1)}-${pad2(d.getDate())}`; }
+    function prettyYMD(s){
+      const [y,m,d] = s.split("-").map(Number);
+      return new Date(y,m-1,d).toLocaleDateString(undefined,{weekday:"short",year:"numeric",month:"short",day:"2-digit"});
+    }
+    function monthName(y,m){
+      return new Date(y,m,1).toLocaleDateString(undefined,{year:"numeric",month:"long"});
+    }
+
+    // ===== IndexedDB =====
+    const DB_NAME = "ledger365_db";
+    const DB_VER = 1;
+    const STORE = "entries";
+
+    function openDB(){
+      return new Promise((resolve, reject) => {
+        const req = indexedDB.open(DB_NAME, DB_VER);
+        req.onupgradeneeded = () => {
+          const db = req.result;
+          if (!db.objectStoreNames.contains(STORE)){
+            const os = db.createObjectStore(STORE, { keyPath: "date" });
+            os.createIndex("by_date", "date", { unique: true });
+          }
+        };
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function dbGet(date){
+      const db = await openDB();
+      return new Promise((resolve,reject)=>{
+        const tx = db.transaction(STORE,"readonly");
+        const os = tx.objectStore(STORE);
+        const req = os.get(date);
+        req.onsuccess = () => resolve(req.result || null);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    async function dbPut(entry){
+      const db = await openDB();
+      return new Promise((resolve,reject)=>{
+        const tx = db.transaction(STORE,"readwrite");
+        tx.oncomplete = () => resolve(true);
+        tx.onerror = () => reject(tx.error);
+        tx.objectStore(STORE).put(entry);
+      });
+    }
+
+    async function dbDelete(date){
+      const db = await openDB();
+      return new Promise((resolve,reject)=>{
+        const tx = db.transaction(STORE,"readwrite");
+        tx.oncomplete = () => resolve(true);
+        tx.onerror = () => reject(tx.error);
+        tx.objectStore(STORE).delete(date);
+      });
+    }
+
+    async function dbGetAll(){
+      const db = await openDB();
+      return new Promise((resolve,reject)=>{
+        const tx = db.transaction(STORE,"readonly");
+        const req = tx.objectStore(STORE).getAll();
+        req.onsuccess = () => resolve(req.result || []);
+        req.onerror = () => reject(req.error);
+      });
+    }
+
+    // ===== UI refs =====
+    const todayBtn = document.getElementById("todayBtn");
+    const exportBtn = document.getElementById("exportBtn");
+    const importBtn = document.getElementById("importBtn");
+    const importFile = document.getElementById("importFile");
+    const markBtn = document.getElementById("markBtn");
+
+    const prevMonthBtn = document.getElementById("prevMonthBtn");
+    const nextMonthBtn = document.getElementById("nextMonthBtn");
+    const calTitleEl = document.getElementById("calTitle");
+    const calGrid = document.getElementById("calGrid");
+
+    const progText = document.getElementById("progText");
+    const progFill = document.getElementById("progFill");
+    const progHint = document.getElementById("progHint");
+
+    const datePill = document.getElementById("datePill");
+    const statusPill = document.getElementById("statusPill");
+
+    const musicLink = document.getElementById("musicLink");
+    const captionInput = document.getElementById("captionInput");
+    const noteArea = document.getElementById("noteArea");
+
+    const photoPickBtn = document.getElementById("photoPickBtn");
+    const photoClearBtn = document.getElementById("photoClearBtn");
+    const photoInput = document.getElementById("photoInput");
+    const photoPreview = document.getElementById("photoPreview");
+    const photoImg = document.getElementById("photoImg");
+
+    const audioPickBtn = document.getElementById("audioPickBtn");
+    const audioClearBtn = document.getElementById("audioClearBtn");
+    const audioInput = document.getElementById("audioInput");
+    const audioPreview = document.getElementById("audioPreview");
+    const audioPlayer = document.getElementById("audioPlayer");
+    const musicHint = document.getElementById("musicHint");
+    const openLinkBtn = document.getElementById("openLinkBtn");
+
+    const saveBtn = document.getElementById("saveBtn");
+    const sprinkleBtn = document.getElementById("sprinkleBtn");
+    const deleteBtn = document.getElementById("deleteBtn");
+
+    const tabList = document.getElementById("tabList");
+    const tabGallery = document.getElementById("tabGallery");
+    const listView = document.getElementById("listView");
+    const galleryView = document.getElementById("galleryView");
+
+    const searchInput = document.getElementById("searchInput");
+    const clearSearchBtn = document.getElementById("clearSearchBtn");
+    const entriesList = document.getElementById("entriesList");
+    const galleryGrid = document.getElementById("galleryGrid");
+
+    // ===== Media URL cleanup =====
+    function clearObjectUrl(which){
+      if (which === "photo" && state.photoUrl){ URL.revokeObjectURL(state.photoUrl); state.photoUrl = null; }
+      if (which === "audio" && state.audioUrl){ URL.revokeObjectURL(state.audioUrl); state.audioUrl = null; }
+    }
+
+    // ===== Completion rules =====
+    function isComplete(entry){
+      if (!entry) return false;
+      const hasPhoto = !!entry.photoBlob;
+      const hasMusic = !!entry.audioBlob || !!(entry.musicLink && entry.musicLink.trim());
+      return hasPhoto && hasMusic;
+    }
+    function isPartial(entry){
+      if (!entry) return false;
+      const any = !!entry.photoBlob || !!entry.audioBlob || !!(entry.musicLink && entry.musicLink.trim()) ||
+                  !!(entry.caption && entry.caption.trim()) || !!(entry.note && entry.note.trim());
+      return any && !isComplete(entry);
+    }
+
+    // ===== Load / Save current day =====
+    async function loadDay(dateStr){
+      clearObjectUrl("photo");
+      clearObjectUrl("audio");
+
+      state.selectedDate = dateStr;
+      datePill.textContent = prettyYMD(dateStr);
+      statusPill.textContent = "loading…";
+
+      const entry = await dbGet(dateStr);
+
+      captionInput.value = entry?.caption || "";
+      noteArea.value = entry?.note || "";
+      musicLink.value = entry?.musicLink || "";
+
+      // Photo preview
+      if (entry?.photoBlob){
+        state.photoUrl = URL.createObjectURL(entry.photoBlob);
+        photoImg.src = state.photoUrl;
+        photoPreview.style.display = "block";
+      } else {
+        photoPreview.style.display = "none";
+        photoImg.removeAttribute("src");
+      }
+
+      // Audio preview
+      if (entry?.audioBlob){
+        state.audioUrl = URL.createObjectURL(entry.audioBlob);
+        audioPlayer.src = state.audioUrl;
+        audioPreview.style.display = "block";
+        musicHint.textContent = "🎧 Audio uploaded (plays here).";
+      } else {
+        audioPreview.style.display = "none";
+        audioPlayer.removeAttribute("src");
+        musicHint.textContent = musicLink.value.trim() ? "🔗 Music link added." : "No music added yet.";
+      }
+
+      // Link button
+      const linkOk = !!musicLink.value.trim();
+      openLinkBtn.disabled = !linkOk;
+
+      // Status
+      if (isComplete(entry)) statusPill.textContent = "✅ complete";
+      else if (isPartial(entry)) statusPill.textContent = "🟢 saved (partial)";
+      else statusPill.textContent = "— empty";
+
+      // Mark button state
+      markBtn.disabled = !isComplete(await buildEntryFromUI(entry));
+
+      await refreshSidePanels();
+    }
+
+    async function buildEntryFromUI(existing){
+      const base = existing || { date: state.selectedDate };
+      const entry = {
+        date: state.selectedDate,
+        caption: (captionInput.value || "").trim(),
+        note: (noteArea.value || "").trim(),
+        musicLink: (musicLink.value || "").trim(),
+        photoBlob: base.photoBlob || null,
+        audioBlob: base.audioBlob || null,
+        updatedAt: new Date().toISOString()
+      };
+      return entry;
+    }
+
+    async function saveDay({silent=false}={}){
+      const existing = await dbGet(state.selectedDate);
+      const entry = await buildEntryFromUI(existing);
+
+      await dbPut(entry);
+
+      // update status instantly
+      if (isComplete(entry)) statusPill.textContent = "✅ complete";
+      else if (isPartial(entry)) statusPill.textContent = "🟢 saved (partial)";
+      else statusPill.textContent = "— empty";
+
+      markBtn.disabled = !isComplete(entry);
+
+      if (!silent) toast("Saved.");
+      await refreshSidePanels();
+      await renderCalendar(); // update dots
+    }
+
+    // ===== Calendar rendering =====
+    const DOW = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+
+    async function renderCalendar(){
+      const y = state.calYear;
+      const m = state.calMonth;
+      calTitleEl.textContent = monthName(y,m);
+      calGrid.innerHTML = "";
+
+      DOW.forEach(d=>{
+        const el = document.createElement("div");
+        el.className = "dow";
+        el.textContent = d;
+        calGrid.appendChild(el);
+      });
+
+      const first = new Date(y,m,1);
+      const firstDow = (first.getDay()+6)%7; // Monday first
+      const daysInMonth = new Date(y,m+1,0).getDate();
+
+      for(let i=0;i<firstDow;i++){
+        const el = document.createElement("div");
+        el.className = "day off";
+        calGrid.appendChild(el);
+      }
+
+      // Build a quick lookup for this month
+      const all = await dbGetAll();
+      const byDate = new Map(all.map(e=>[e.date,e]));
+
+      const todayStr = ymd(new Date());
+
+      for(let d=1; d<=daysInMonth; d++){
+        const dateStr = `${y}-${pad2(m+1)}-${pad2(d)}`;
+        const el = document.createElement("div");
+        el.className = "day";
+        el.textContent = d;
+
+        if (dateStr === todayStr) el.classList.add("today");
+        if (dateStr === state.selectedDate) el.classList.add("selected");
+
+        const e = byDate.get(dateStr);
+
+        if (isComplete(e)){
+          const dot = document.createElement("div");
+          dot.className = "dot";
+          el.appendChild(dot);
+        } else if (isPartial(e)){
+          const dot = document.createElement("div");
+          dot.className = "dot noteDot";
+          el.appendChild(dot);
+        }
+
+        el.addEventListener("click", async () => {
+          state.selectedDate = dateStr;
+          datePill.textContent = prettyYMD(dateStr);
+          await loadDay(dateStr);
+          // re-render for selected outline
+          await renderCalendar();
+        });
+
+        calGrid.appendChild(el);
+      }
+
+      await updateProgress(all);
+    }
+
+    function shiftMonth(delta){
+      let y = state.calYear, m = state.calMonth + delta;
+      while(m<0){ m+=12; y-=1; }
+      while(m>11){ m-=12; y+=1; }
+      state.calYear=y; state.calMonth=m;
+      renderCalendar();
+    }
+
+    prevMonthBtn.addEventListener("click", ()=>shiftMonth(-1));
+    nextMonthBtn.addEventListener("click", ()=>shiftMonth(1));
+
+    todayBtn.addEventListener("click", async ()=>{
+      const t = new Date();
+      state.calYear = t.getFullYear();
+      state.calMonth = t.getMonth();
+      const ds = ymd(t);
+      await loadDay(ds);
+      await renderCalendar();
+      sprinkle(8);
+    });
+
+    // ===== Progress =====
+    async function updateProgress(allEntries){
+      const completeCount = allEntries.filter(isComplete).length;
+      progText.textContent = `${completeCount} / 365`;
+      progFill.style.width = `${Math.round((completeCount/365)*100)}%`;
+      progHint.textContent = completeCount === 0
+        ? "Start with today: add a photo + music and save."
+        : "Keep going — consistency looks so good on you.";
+    }
+
+    // ===== Side panels (list + gallery) =====
+    function escapeHtml(s){
+      return (s||"").replace(/[&<>"']/g, c => ({
+        "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#039;"
+      }[c]));
+    }
+
+    function matchesQuery(entry, q){
+      q = q.toLowerCase();
+      const blob = [
+        entry.date,
+        entry.caption || "",
+        entry.note || "",
+        entry.musicLink || "",
+        entry.audioBlob ? "audio" : "",
+        entry.photoBlob ? "photo" : "",
+        isComplete(entry) ? "complete" : ""
+      ].join(" ").toLowerCase();
+      return blob.includes(q);
+    }
+
+    async function refreshSidePanels(){
+      const q = (searchInput.value||"").trim();
+      const all = await dbGetAll();
+      const filtered = all
+        .filter(e => q ? matchesQuery(e,q) : true)
+        .sort((a,b) => a.date < b.date ? 1 : -1);
+
+      // List
+      entriesList.innerHTML = "";
+      if (!filtered.length){
+        const li = document.createElement("li");
+        li.className = "entry";
+        li.innerHTML = `<strong class="serif">No entries found</strong>
+                        <small>Try a different search.</small>`;
+        entriesList.appendChild(li);
+      } else {
+        filtered.forEach(e=>{
+          const li = document.createElement("li");
+          li.className = "entry";
+          const active = e.date === state.selectedDate;
+          li.innerHTML = `
+            <strong class="serif">${active ? "✦ " : ""}${escapeHtml(e.caption || "Untitled day")}</strong>
+            <small>${escapeHtml(prettyYMD(e.date))}</small>
+            <div class="tagRow">
+              <span class="tag">${isComplete(e) ? "✅ complete" : isPartial(e) ? "🟢 partial" : "—"}</span>
+              <span class="tag">${e.photoBlob ? "📸 photo" : "no photo"}</span>
+              <span class="tag">${(e.audioBlob || (e.musicLink||"").trim()) ? "🎵 music" : "no music"}</span>
+            </div>
+          `;
+          li.addEventListener("click", async ()=>{
+            // jump calendar to that month
+            const dt = new Date(e.date + "T00:00:00");
+            state.calYear = dt.getFullYear();
+            state.calMonth = dt.getMonth();
+            await loadDay(e.date);
+            await renderCalendar();
+          });
+          entriesList.appendChild(li);
+        });
+      }
+
+      // Gallery
+      galleryGrid.innerHTML = "";
+      const withPhotos = filtered.filter(e=>!!e.photoBlob);
+      if (!withPhotos.length){
+        galleryGrid.innerHTML = `<div class="sub" style="grid-column:1/-1;">No photos yet. Add a photo to see the gallery.</div>`;
+      } else {
+        // Show latest 80 tiles for performance
+        withPhotos.slice(0,80).forEach(e=>{
+          const tile = document.createElement("div");
+          tile.className = "tile";
+          const url = URL.createObjectURL(e.photoBlob);
+          tile.innerHTML = `
+            <img src="${url}" alt="photo ${escapeHtml(e.date)}" />
+            <div class="cap">
+              <span class="mono">${escapeHtml(e.date)}</span>
+              <span>${isComplete(e) ? "✅" : "🟢"}</span>
+            </div>
+          `;
+          tile.addEventListener("click", async ()=>{
+            URL.revokeObjectURL(url);
+            const dt = new Date(e.date + "T00:00:00");
+            state.calYear = dt.getFullYear();
+            state.calMonth = dt.getMonth();
+            await loadDay(e.date);
+            await renderCalendar();
+          });
+          // revoke when image loads (we keep html src though). safer: revoke after short delay.
+          setTimeout(()=> URL.revokeObjectURL(url), 4000);
+          galleryGrid.appendChild(tile);
+        });
+      }
+    }
+
+    // ===== Tabs =====
+    function setView(v){
+      state.view = v;
+      if (v === "list"){
+        tabList.classList.add("active");
+        tabGallery.classList.remove("active");
+        listView.style.display = "";
+        galleryView.style.display = "none";
+      } else {
+        tabGallery.classList.add("active");
+        tabList.classList.remove("active");
+        listView.style.display = "none";
+        galleryView.style.display = "";
+      }
+    }
+    tabList.addEventListener("click", ()=>setView("list"));
+    tabGallery.addEventListener("click", ()=>setView("gallery"));
+
+    // ===== Inputs / media =====
+    photoPickBtn.addEventListener("click", ()=>photoInput.click());
+    audioPickBtn.addEventListener("click", ()=>audioInput.click());
+
+    photoInput.addEventListener("change", async ()=>{
+      const file = photoInput.files?.[0];
+      if (!file) return;
+      const existing = await dbGet(state.selectedDate);
+      const entry = await buildEntryFromUI(existing);
+      entry.photoBlob = file;
+      await dbPut(entry);
+
+      toast("Photo added.");
+      sprinkle(8);
+      await loadDay(state.selectedDate);
+      await renderCalendar();
+    });
+
+    audioInput.addEventListener("change", async ()=>{
+      const file = audioInput.files?.[0];
+      if (!file) return;
+      const existing = await dbGet(state.selectedDate);
+      const entry = await buildEntryFromUI(existing);
+      entry.audioBlob = file;
+      // if uploading audio, keep link (optional). You can still keep link too; completion allows either.
+      await dbPut(entry);
+
+      toast("Audio added.");
+      sprinkle(8);
+      await loadDay(state.selectedDate);
+      await renderCalendar();
+    });
+
+    photoClearBtn.addEventListener("click", async ()=>{
+      const e = await dbGet(state.selectedDate);
+      if (!e?.photoBlob){ toast("No photo to remove."); return; }
+      e.photoBlob = null;
+      await dbPut(e);
+      toast("Photo removed.");
+      await loadDay(state.selectedDate);
+      await renderCalendar();
+    });
+
+    audioClearBtn.addEventListener("click", async ()=>{
+      const e = await dbGet(state.selectedDate);
+      if (!e?.audioBlob){ toast("No audio to remove."); return; }
+      e.audioBlob = null;
+      await dbPut(e);
+      toast("Audio removed.");
+      await loadDay(state.selectedDate);
+      await renderCalendar();
+    });
+
+    musicLink.addEventListener("input", ()=>{
+      openLinkBtn.disabled = !musicLink.value.trim();
+      musicHint.textContent = musicLink.value.trim() ? "🔗 Music link added." : (audioPlayer.src ? "🎧 Audio uploaded (plays here)." : "No music added yet.");
+    });
+
+    openLinkBtn.addEventListener("click", ()=>{
+      const link = musicLink.value.trim();
+      if (!link) return;
+      window.open(link, "_blank", "noopener,noreferrer");
+    });
+
+    // autosave text fields (debounced)
+    let autosaveTimer = null;
+    function autosaveSoon(){
+      clearTimeout(autosaveTimer);
+      autosaveTimer = setTimeout(()=>saveDay({silent:true}), 650);
+    }
+    captionInput.addEventListener("input", autosaveSoon);
+    noteArea.addEventListener("input", autosaveSoon);
+    musicLink.addEventListener("input", autosaveSoon);
+
+    // ===== Buttons =====
+    saveBtn.addEventListener("click", ()=>saveDay({silent:false}));
+    sprinkleBtn.addEventListener("click", ()=>sprinkle(18));
+
+    deleteBtn.addEventListener("click", async ()=>{
+      const e = await dbGet(state.selectedDate);
+      if (!e){ toast("Nothing to delete."); return; }
+      const ok = confirm(`Delete entry for ${prettyYMD(state.selectedDate)}?`);
+      if (!ok) return;
+      await dbDelete(state.selectedDate);
+      toast("Deleted.");
+      await loadDay(state.selectedDate);
+      await renderCalendar();
+    });
+
+    markBtn.addEventListener("click", async ()=>{
+      // "mark complete" just validates and saves (since completion is rule-based)
+      await saveDay({silent:false});
+      const e = await dbGet(state.selectedDate);
+      if (isComplete(e)){
+        toast("✅ Day completed.");
+        sprinkle(16);
+      } else {
+        toast("Need photo + music (audio or link).");
+      }
+    });
+
+    // ===== Export / Import =====
+    function blobToDataURL(blob){
+      return new Promise((resolve,reject)=>{
+        const fr = new FileReader();
+        fr.onload = ()=> resolve(fr.result);
+        fr.onerror = ()=> reject(fr.error);
+        fr.readAsDataURL(blob);
+      });
+    }
+    async function dataURLToBlob(dataUrl){
+      const res = await fetch(dataUrl);
+      return res.blob();
+    }
+
+    function downloadJson(filename, data){
+      const blob = new Blob([JSON.stringify(data)], {type:"application/json"});
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      a.click();
+      setTimeout(()=>URL.revokeObjectURL(url), 1200);
+    }
+
+    exportBtn.addEventListener("click", async ()=>{
+      const all = await dbGetAll();
+      // WARNING: including blobs makes file big, but it preserves everything.
+      const packed = [];
+      for (const e of all){
+        packed.push({
+          date: e.date,
+          caption: e.caption || "",
+          note: e.note || "",
+          musicLink: e.musicLink || "",
+          updatedAt: e.updatedAt || "",
+          photoDataUrl: e.photoBlob ? await blobToDataURL(e.photoBlob) : null,
+          audioDataUrl: e.audioBlob ? await blobToDataURL(e.audioBlob) : null
+        });
+      }
+      const payload = {
+        app: "365Ledger",
+        version: 1,
+        exportedAt: new Date().toISOString(),
+        entries: packed
+      };
+      downloadJson(`365-ledger-backup-${ymd(new Date())}.json`, payload);
+      toast("Exported backup.");
+      sprinkle(10);
+    });
+
+    importBtn.addEventListener("click", ()=>importFile.click());
+
+    importFile.addEventListener("change", async ()=>{
+      const file = importFile.files?.[0];
+      if (!file) return;
+      try{
+        const text = await file.text();
+        const data = JSON.parse(text);
+        if (!data?.entries || !Array.isArray(data.entries)) {
+          toast("Invalid backup file.");
+          return;
+        }
+        const ok = confirm("Import will MERGE entries. Same dates will be overwritten. Continue?");
+        if (!ok) return;
+
+        for (const item of data.entries){
+          const entry = {
+            date: item.date,
+            caption: item.caption || "",
+            note: item.note || "",
+            musicLink: item.musicLink || "",
+            updatedAt: item.updatedAt || new Date().toISOString(),
+            photoBlob: item.photoDataUrl ? await dataURLToBlob(item.photoDataUrl) : null,
+            audioBlob: item.audioDataUrl ? await dataURLToBlob(item.audioDataUrl) : null,
+          };
+          await dbPut(entry);
+        }
+
+        toast("Imported.");
+        sprinkle(12);
+        await loadDay(state.selectedDate);
+        await renderCalendar();
+      } catch (e){
+        toast("Import failed.");
+      } finally {
+        importFile.value = "";
+      }
+    });
+
+    // ===== Search =====
+    searchInput.addEventListener("input", refreshSidePanels);
+    clearSearchBtn.addEventListener("click", ()=>{
+      searchInput.value = "";
+      refreshSidePanels();
+    });
+
+    // ===== Boot =====
+    async function boot(){
+      const t = new Date();
+      state.calYear = t.getFullYear();
+      state.calMonth = t.getMonth();
+
+      const ds = ymd(t);
+      await loadDay(ds);
+      await renderCalendar();
+      await refreshSidePanels();
+
+      setTimeout(()=>sprinkle(12), 450);
+    }
+
+    boot();
+  </script>
+</body>
+</html>
